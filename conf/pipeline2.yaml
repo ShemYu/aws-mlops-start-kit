@@ -1,5 +1,5 @@
 general:
-  pipeline_name: XGBoostAbaloneModelPipeline
+  pipeline_name: linear-learning
 preprocess:
   input_data:
     s3_uri_postfix: abalone/abalone-dataset.csv
@@ -13,17 +13,14 @@ preprocess:
 train:
   model:
     s3_uri_postfix: AbaloneTrain
-    type: xgboost
-    version: 1.0-1
+    type: linear-learner
+    version: "1"  # 使用內建演算法時，版本號通常可以省略或設為 "1"
     hyper_params:
-      objective: "reg:linear"
-      num_round: 50
-      max_depth: 5
-      eta: 0.2
-      gamma: 4
-      min_child_weight: 6
-      subsample: 0.7
-      silent: 0
+      feature_dim: "10"
+      predictor_type: "regressor"
+      mini_batch_size: "100"
+      epochs: "15"
+      loss: "absolute_loss"
   instance:
     type: "ml.m5.xlarge"
     count: 1
