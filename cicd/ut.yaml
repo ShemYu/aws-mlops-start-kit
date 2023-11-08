@@ -1,0 +1,2 @@
+s3_default_bucket_uri: "s3://sagemaker-us-east-1-155352198320/"
+sagemaker_execution_role: "arn:aws:iam::155352198320:role/service-role/AmazonSageMaker-ExecutionRole-20231012T085702"
