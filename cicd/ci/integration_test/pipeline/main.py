@@ -10,10 +10,13 @@ sys.path.append(str(root_dir))
 
 
 import boto3
+import sagemaker
 from sagemaker.inputs import TrainingInput
 from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterInteger, ParameterString
 from sagemaker.workflow.pipeline import Pipeline
+from sagemaker.workflow.model_step import ModelStep
+from sagemaker.model import Model
 
 from cicd.ci.integration_test.pipeline import (evaluate, permission,
                                                preprocess, register, train,
@@ -155,3 +158,29 @@ pipeline = Pipeline(  # 終於我們來到 pipeline 定義
     steps=[preprocess_job, train_job, evaluate_job, register_job],
 )
 pipeline.upsert(role_arn=role)
+
+
+from datetime import datetime
+
+# Model deploy definition
+image_uri = sagemaker.image_uris.retrieve(  # 指定環境鏡像檔案配置
+    framework=model_info["type"],
+    region=region,
+    version=model_info["version"],
+    py_version="py3",
+    instance_type=model_training_instance_info["type"],
+)
+model = Model(
+    # model image uri
+    image_uri=image_uri,
+    model_data="s3://sagemaker-us-east-1-155352198320/AbaloneTrain/pipelines-p1t7q0zsetis-AbaloneTrain-Csp04ZwEUy/output/model.tar.gz",
+    sagemaker_session=sagemaker_session,
+    role=role,
+)
+endpoint_name = f"DEMO-{datetime.utcnow():%Y-%m-%d-%H%M}"
+print("EndpointName =", endpoint_name)
+model.deploy(
+    initial_instance_count=1,
+    instance_type=model_training_instance_info["type"],
+    endpoint_name=endpoint_name
+)
