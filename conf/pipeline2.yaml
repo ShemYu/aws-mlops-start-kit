@@ -1,5 +1,6 @@
 general:
   pipeline_name: linear-learning
+
 preprocess:
   input_data:
     s3_uri_postfix: abalone/abalone-dataset.csv
@@ -10,24 +11,28 @@ preprocess:
   instance:
     count: 1 
     script: preprocess.py
+
 train:
   model:
     s3_uri_postfix: AbaloneTrain
     type: linear-learner
-    version: "1"  # 使用內建演算法時，版本號通常可以省略或設為 "1"
+    version: "1"
     hyper_params:
-      feature_dim: "10"
+      feature_dim: "10"  # 確保這個數字匹配數據集的特徵數量
       predictor_type: "regressor"
-      mini_batch_size: "100"
-      epochs: "15"
-      loss: "absolute_loss"
+      mini_batch_size: "200"  # 增加批次大小
+      epochs: "30"  # 增加訓練循環的次數
+      loss: "squared_loss"  # 改變損失函數以應對異常值的影響
+      wd: "0.001"  # 添加L2正則化來防止過擬合
   instance:
     type: "ml.m5.xlarge"
     count: 1
+
 evaluate:
   instance:
     type: "ml.m5.xlarge"
     count: 1
     script: evaluate.py
+
 register_model:
   group_name: AbaloneModelPackageGroupName
