@@ -15,14 +15,9 @@ from sagemaker.session import Session
 from sagemaker.workflow.parameters import ParameterInteger, ParameterString
 from sagemaker.workflow.pipeline import Pipeline
 
-from cicd.ci.integration_test.pipeline import (
-    evaluate,
-    permission,
-    preprocess,
-    register,
-    train,
-    utils,
-)
+from cicd.ci.integration_test.pipeline import (evaluate, permission,
+                                               preprocess, register, train,
+                                               utils)
 
 # 配置類型的參數
 ut_config = utils.load_config("cicd/ut.yaml")
