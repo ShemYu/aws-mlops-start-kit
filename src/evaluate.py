@@ -27,7 +27,9 @@ if __name__ == "__main__":
         y_test = df.iloc[:, 0].to_numpy()  # 把 label 欄位，變數轉換 numpy
         df.drop(df.columns[0], axis=1, inplace=True)  # drop Y
 
-        X_test = xgboost.DMatrix(df.values)  # 應該是透過 xgboost 框架把 df x 轉換成可輸入格式
+        X_test = xgboost.DMatrix(
+            df.values
+        )  # 應該是透過 xgboost 框架把 df x 轉換成可輸入格式
 
         predictions = model.predict(X_test)  # 以 test data 進行 prediction
 

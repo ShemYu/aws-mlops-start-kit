@@ -1,6 +1,5 @@
 import sagemaker
-from sagemaker.processing import (ProcessingInput, ProcessingOutput,
-                                  ScriptProcessor)
+from sagemaker.processing import ProcessingInput, ProcessingOutput, ScriptProcessor
 from sagemaker.workflow.properties import PropertyFile
 from sagemaker.workflow.steps import ProcessingStep
 

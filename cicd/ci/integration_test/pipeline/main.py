@@ -12,15 +12,20 @@ sys.path.append(str(root_dir))
 import boto3
 import sagemaker
 from sagemaker.inputs import TrainingInput
+from sagemaker.model import Model
 from sagemaker.session import Session
+from sagemaker.workflow.model_step import ModelStep
 from sagemaker.workflow.parameters import ParameterInteger, ParameterString
 from sagemaker.workflow.pipeline import Pipeline
-from sagemaker.workflow.model_step import ModelStep
-from sagemaker.model import Model
 
-from cicd.ci.integration_test.pipeline import (evaluate, permission,
-                                               preprocess, register, train,
-                                               utils)
+from cicd.ci.integration_test.pipeline import (
+    evaluate,
+    permission,
+    preprocess,
+    register,
+    train,
+    utils,
+)
 
 # 配置類型的參數
 ut_config = utils.load_config("cicd/ut.yaml")
@@ -182,5 +187,5 @@ print("EndpointName =", endpoint_name)
 model.deploy(
     initial_instance_count=1,
     instance_type=model_training_instance_info["type"],
-    endpoint_name=endpoint_name
+    endpoint_name=endpoint_name,
 )
