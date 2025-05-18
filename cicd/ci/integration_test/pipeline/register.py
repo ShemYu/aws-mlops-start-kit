@@ -46,7 +46,9 @@ def register_model(
             "ml.m5.xlarge",
         ],  # realtime inference AWS 機器定義
         transform_instances=["ml.m5.xlarge"],  # batch transform AWS 機器定義
-        model_package_group_name=register_info["group_name"],  # 最初定義的 model group name
+        model_package_group_name=register_info[
+            "group_name"
+        ],  # 最初定義的 model group name
         approval_status=model_approval_status,  # 包裝 pipeline property 在這使用(??)
         model_metrics=model_metrics,  # metrics
     )
