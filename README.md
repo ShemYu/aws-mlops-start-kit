@@ -12,12 +12,13 @@ This repository is a template for setting up end-to-end MLOps workflows on AWS S
 ## Running the pipeline
 
 1. Install dependencies (SageMaker SDK and scikit-learn).
-2. Adjust the values in one of the configuration files under `conf/` to match your environment.
+2. Adjust the values in one of the configuration files under `conf/` to match your environment. You can also provide an environment file under `conf/environments/` and set the `ENV_CONFIG_PATH` environment variable to its path.
 3. Launch the pipeline with:
 
 ```bash
 python cicd/ci/integration_test/pipeline/main.py
 ```
+The script will look for the file specified by `ENV_CONFIG_PATH`. If not set, it defaults to `cicd/ut.yaml`.
 
 This command creates and submits a SageMaker pipeline containing preprocessing, training, evaluation and model registration steps.
 

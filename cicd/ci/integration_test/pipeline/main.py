@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -28,7 +29,8 @@ from cicd.ci.integration_test.pipeline import (
 )
 
 # 配置類型的參數
-ut_config = utils.load_config("cicd/ut.yaml")
+env_config_path = os.getenv("ENV_CONFIG_PATH", "cicd/ut.yaml")
+ut_config = utils.load_config(env_config_path)
 config = utils.load_config(ut_config["pipeline_config"])
 
 
