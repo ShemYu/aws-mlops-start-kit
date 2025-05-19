@@ -1,28 +1,77 @@
 # aws-mlops-start-kit
 
-This repository is a template for setting up end-to-end MLOps workflows on AWS SageMaker. It offers a basic pipeline definition together with sample preprocessing and evaluation scripts.
+This project provides a starting point for building SageMaker pipelines. It is
+intended to become a **cookiecutter template** so that new MLOps projects can be
+bootstrapped quickly.  The repository ships with a minimal yet complete pipeline
+definition and sample scripts that you are free to replace with your own
+feature engineering, training and evaluation code.
 
 ## Project structure
 
-- `conf/` - YAML configuration files describing the pipeline. The files `pipeline.yaml` and `pipeline2.yaml` define input locations, training options and model registry settings.
-- `cicd/ci/integration_test/pipeline/` - Modules that assemble each step of the SageMaker pipeline such as preprocessing, training, evaluation and registering the model.
-- `src/` - Example Python scripts executed by the pipeline. `preprocess.py` processes the Abalone dataset and `evaluate.py` computes evaluation metrics.
-- `Makefile` - Provides a `lint` rule which formats the source code using `isort` and `black`.
+- `conf/` – YAML configuration files describing pipeline parameters. The default
+  files `pipeline.yaml` and `pipeline2.yaml` specify input locations, estimator
+  options and model registry settings.
+- `cicd/ci/integration_test/pipeline/` – Python modules that assemble the
+  SageMaker pipeline.  Each step (preprocess, train, evaluate, register) is kept
+  in a dedicated file so you can easily modify or extend the logic.
+- `src/` – Example scripts used by the pipeline. `preprocess.py` performs basic
+  feature processing of the Abalone dataset and `evaluate.py` calculates metrics.
+- `Makefile` – Contains a `lint` rule that formats the code using `isort` and
+  `black`.
 
-## Running the pipeline
+## Quick start
 
-1. Install dependencies (SageMaker SDK and scikit-learn).
-2. Adjust the values in one of the configuration files under `conf/` to match your environment.
-3. Launch the pipeline with:
+1. **Install dependencies** – install the required Python packages:
 
-```bash
-python cicd/ci/integration_test/pipeline/main.py
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-This command creates and submits a SageMaker pipeline containing preprocessing, training, evaluation and model registration steps.
+2. **Configure the environment** – update `conf/pipeline.yaml` (or
+   `conf/pipeline2.yaml`) to point to your S3 buckets, specify the training
+   instance type and tweak hyper‑parameters.  The file `cicd/ut.yaml` holds the
+   default bucket URI and the execution role used during development.
 
-Format the codebase at any time with:
+3. **Run the pipeline** – execute:
 
-```bash
-make lint
-```
+   ```bash
+   python cicd/ci/integration_test/pipeline/main.py \
+       --env-config cicd/ut.yaml \
+       --pipeline-config conf/pipeline.yaml
+   ```
+
+   This creates and submits a SageMaker pipeline that includes preprocessing,
+   training, evaluation and model registration steps.
+
+4. **Deploy the model** – the helper `cicd/ci/integration_test/pipeline/deploy.py`
+   demonstrates how to deploy the training output to a SageMaker endpoint.
+
+Format the codebase at any time with `make lint`.
+
+## CI/CD integration
+
+The modules under `cicd/` are designed to be invoked from your CI/CD system.
+By calling `python cicd/ci/integration_test/pipeline/main.py` inside a build
+job you can automatically update or create the pipeline whenever changes are
+pushed.  The folder structure keeps each pipeline step in its own module so that
+custom logic can be dropped in without altering unrelated components.
+
+## Extending the template
+
+The goal is to keep the interface simple while allowing you to plug in your own
+code:
+
+- **Feature engineering** – edit `src/preprocess.py` or modify
+  `cicd/ci/integration_test/pipeline/preprocess.py` to use a different processor.
+- **Model training** – adjust the estimator configuration in
+  `cicd/ci/integration_test/pipeline/train.py` or swap in your own training
+  script.
+- **Evaluation** – replace `src/evaluate.py` with custom metrics and change the
+  evaluate step accordingly.
+- **Additional steps** – create new modules in the pipeline folder and register
+  them in `main.py`.
+
+Feel free to reorganize the `conf/` files or pipeline modules to suit your
+workflow.  The current layout aims to be small and readable so newcomers can
+quickly understand where to add their own code.
+
