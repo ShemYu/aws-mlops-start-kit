@@ -14,7 +14,7 @@ def get_evaluator(
     model_uri,
     test_data_s3_uri,
 ):
-    image_uri = sagemaker.image_uris.retrieve(  # 指定環境鏡像檔案配置
+    image_uri = sagemaker.image_uris.retrieve(  # Retrieve the training image
         framework=model_info["type"],
         region=region,
         version=model_info["version"],
@@ -23,33 +23,33 @@ def get_evaluator(
     )
 
     script_eval = ScriptProcessor(
-        image_uri=image_uri,  # 這邊沿用 Training 環境
+        image_uri=image_uri,  # Use the same image as training
         command=["python3"],
         instance_type=evaluate_instance["type"],
         instance_count=evaluate_instance["count"],
-        base_job_name="script-abalone-eval",  # TODO Naming rule TBD，就可以抽象成統一名稱
+        base_job_name="script-abalone-eval",  # TODO decide on a common naming rule
         role=role,
     )
     evaluation_report = PropertyFile(
         name="EvaluationReport", output_name="evaluation", path="evaluation.json"
     )
-    return ProcessingStep(  # 定義 Evaluate 的 Processing Instance
+    return ProcessingStep(  # Define the evaluation processing job
         name="AbaloneEval",
         processor=script_eval,
         inputs=[
             ProcessingInput(
                 source=model_uri,
-                destination="/opt/ml/processing/model",  # TODO 與 src/evaluate.py 當中參數其實應該抽象，並統一介面
+                destination="/opt/ml/processing/model",  # TODO unify parameter with src/evaluate.py
             ),
             ProcessingInput(
                 source=test_data_s3_uri,
-                destination="/opt/ml/processing/test",  # TODO 與 src/evaluate.py 當中參數其實應該抽象，並統一介面
+                destination="/opt/ml/processing/test",  # TODO unify parameter with src/evaluate.py
             ),
         ],
         outputs=[
             ProcessingOutput(
                 output_name="evaluation", source="/opt/ml/processing/evaluation"
-            ),  # TODO 與 src/evaluate.py 當中參數其實應該抽象，並統一介面
+            ),  # TODO unify parameter with src/evaluate.py
         ],
         code=evaluate_script,
         property_files=[evaluation_report],
